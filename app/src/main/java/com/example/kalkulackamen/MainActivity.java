@@ -2,15 +2,24 @@ package com.example.kalkulackamen;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.graphics.Color;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.io.IOException;
 import java.io.StringReader;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -56,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
 
             double outputAmount = convert(inputCurrency, outputCurrency, inputAmount);
             outputAmountTextView.setText(decimalFormat.format(outputAmount));
+
+            fetchHistoricalData(inputCurrency, outputCurrency);
         });
 
         // Fetch exchange rates
@@ -121,16 +132,16 @@ public class MainActivity extends AppCompatActivity {
                             String name = myParser.getName();
                             switch (event) {
                                 case XmlPullParser.START_TAG:
-                                    if(name.equals("radek")) {
+                                    if (name.equals("radek")) {
                                         String currencyCode = myParser.getAttributeValue(null, "kod");
-                                        if(currencyCode.equals("EUR") || currencyCode.equals("USD")) {
-                                            double rate = Double.parseDouble(myParser.getAttributeValue(null,"kurz").replace(",", "."));
-                                            double quantity = Double.parseDouble(myParser.getAttributeValue(null,"mnozstvi"));
+                                        if (currencyCode.equals("EUR") || currencyCode.equals("USD")) {
+                                            double rate = Double.parseDouble(myParser.getAttributeValue(null, "kurz").replace(",", "."));
+                                            double quantity = Double.parseDouble(myParser.getAttributeValue(null, "mnozstvi"));
                                             double ratePerUnit = rate / quantity;
 
-                                            if(currencyCode.equals("EUR")) {
+                                            if (currencyCode.equals("EUR")) {
                                                 czkToEurRate = ratePerUnit;
-                                            } else if(currencyCode.equals("USD")) {
+                                            } else if (currencyCode.equals("USD")) {
                                                 czkToUsdRate = ratePerUnit;
                                             }
                                         }
@@ -149,6 +160,61 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else {
                     Log.e("fetchExchangeRates", "Response not successful. Code: " + response.code());
+                }
+            }
+        });
+    }
+
+
+    private void fetchHistoricalData(String baseCurrency, String targetCurrency) {
+        OkHttpClient client = new OkHttpClient();
+
+        String url = "https://api.frankfurter.app/" + baseCurrency + ".." + targetCurrency + "?period=1w";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code " + response);
+                } else {
+                    // Parse the response
+                    try {
+                        JSONObject json = new JSONObject(response.body().string());
+                        JSONObject rates = json.getJSONObject("rates");
+
+                        ArrayList<Entry> entries = new ArrayList<Entry>();
+
+                        Iterator<String> dates = rates.keys();
+                        int index = 0;
+                        while (dates.hasNext()) {
+                            String date = dates.next();
+                            double rate = rates.getJSONObject(date).getDouble(targetCurrency);
+                            entries.add(new Entry(index++, (float) rate));
+                        }
+
+                        LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
+                        dataSet.setColor(Color.RED);
+                        dataSet.setValueTextColor(Color.BLACK);
+
+                        LineData lineData = new LineData(dataSet);
+
+                        runOnUiThread(() -> {
+                            LineChart chart = findViewById(R.id.chart);
+                            chart.setData(lineData);
+                            chart.invalidate(); // refresh
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
