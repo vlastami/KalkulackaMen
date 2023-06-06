@@ -24,12 +24,16 @@ public class HistoricalDataService {
     private Activity activity;
     private LineChart chart;
 
+    public interface DataFetchedCallback {
+        void onDataFetched(LineData lineData);
+    }
+
     public HistoricalDataService(Activity activity, LineChart chart) {
         this.activity = activity;
         this.chart = chart;
     }
 
-    public void fetchHistoricalData(String baseCurrency, String targetCurrency) {
+    public void fetchHistoricalData(String fromDate, String toDate, String baseCurrency, String targetCurrency, DataFetchedCallback callback) {
         if (!targetCurrency.equals("USD") && !targetCurrency.equals("EUR")) {
             return;
         }
@@ -37,8 +41,6 @@ public class HistoricalDataService {
         OkHttpClient client = new OkHttpClient();
 
         String baseUrl = "https://api.frankfurter.app/";
-        String fromDate = "2020-01-01";  // TODO: Replace with actual start date
-        String toDate = "2023-06-01";    // TODO: Replace with actual end date
 
         String url = baseUrl + fromDate + ".." + toDate + "?from=" + baseCurrency + "&to=" + targetCurrency;
 
@@ -86,8 +88,7 @@ public class HistoricalDataService {
                         Log.d("HistoricalDataService", "LineData: " + lineData.toString());
 
                         activity.runOnUiThread(() -> {
-                            chart.setData(lineData);
-                            chart.invalidate();
+                            callback.onDataFetched(lineData);
                         });
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -96,4 +97,5 @@ public class HistoricalDataService {
             }
         });
     }
+
 }

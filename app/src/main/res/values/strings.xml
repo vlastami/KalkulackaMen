@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">KalkulackaMen</string>
+    <string name="base_currency_prompt">Select base currency</string>
+    <string name="target_currency_prompt">Select target currency</string>
+    <array name="currency_array">
+        <item>CZK</item>
+        <item>USD</item>
+        <item>EUR</item>
+    </array>
 </resources>
