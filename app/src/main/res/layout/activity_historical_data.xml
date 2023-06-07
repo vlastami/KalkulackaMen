@@ -34,17 +34,39 @@
         android:layout_below="@id/base_currency_spinner"
         android:spinnerMode="dropdown" />
 
-    <Button
-        android:id="@+id/display_data_button"
+    <LinearLayout
+        android:id="@+id/button_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/target_currency_spinner"
-        android:text="Display Data" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/display_data_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Display Data" />
+
+        <Button
+            android:id="@+id/landscape_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Display on Landscape" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/description_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/button_layout"
+        android:textSize="16sp" />
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/display_data_button" />
+        android:layout_below="@id/description_text" />
 
 </RelativeLayout>

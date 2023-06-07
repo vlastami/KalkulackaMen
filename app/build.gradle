@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.kalkulackamen'
+    namespace 'com.example.moneyAndroidApp'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.kalkulackamen"
+        applicationId "com.example.moneyAndroidApp"
         minSdk 24
         targetSdk 33
         versionCode 1

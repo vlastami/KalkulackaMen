@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.kalkulackamen">
+    package="com.example.moneyAndroidApp">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -13,13 +13,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KalkulackaMen">
         <activity
-            android:name=".HistoricalDataActivity"
+            android:name="com.example.moneyAndroidApp.HistoricalDataActivity"
             android:exported="false" />
         <activity
-            android:name=".ConvertActivity"
+            android:name="com.example.moneyAndroidApp.ConvertActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.moneyAndroidApp.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,6 +27,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ChartLandscapeActivity"
+            android:screenOrientation="landscape"/>
     </application>
 
 </manifest>

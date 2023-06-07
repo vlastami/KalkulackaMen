@@ -1,4 +1,4 @@
-package com.example.kalkulackamen;
+package com.example.moneyAndroidApp;
 
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -43,19 +43,19 @@ public class ConvertActivity extends AppCompatActivity {
 
         Button convertButton = findViewById(R.id.start_conversion_button);
         convertButton.setOnClickListener(v -> {
-            // Get values from Spinner and EditText
+
             String inputCurrency = inputCurrencySpinner.getSelectedItem().toString();
             String targetCurrency = targetCurrencySpinner.getSelectedItem().toString();
             double amount = Double.parseDouble(amountField.getText().toString());
 
-            // Fetch exchange rates and convert currency
+
             exchangeRateService.fetchExchangeRates(() -> {
                 double result = currencyConverter.convert(inputCurrency, targetCurrency, amount);
 
-                // Get current date
+
                 String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
 
-                // Update the result field with the formatted string
+
                 runOnUiThread(() -> resultField.setText(String.format(Locale.getDefault(),
                         "On %s, your input of %s %s equals %.2f %s based on the current exchange rate.",
                         currentDate, amount, inputCurrency, result, targetCurrency)));

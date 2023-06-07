@@ -1,4 +1,4 @@
-package com.example.kalkulackamen;
+package com.example.moneyAndroidApp;
 
 import java.text.DecimalFormat;
 

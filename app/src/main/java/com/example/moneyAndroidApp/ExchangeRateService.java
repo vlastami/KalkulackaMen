@@ -1,4 +1,4 @@
-package com.example.kalkulackamen;
+package com.example.moneyAndroidApp;
 
 import okhttp3.*;
 import org.xmlpull.v1.XmlPullParser;
@@ -69,8 +69,6 @@ public class ExchangeRateService {
                             event = myParser.next();
                         }
 
-                        // Run the passed in Runnable after the exchange rates have been fetched
-                        // Need to make sure it runs on the UI thread
                         new Handler(Looper.getMainLooper()).post(onRatesFetched);
 
                     } catch (XmlPullParserException | IOException e) {

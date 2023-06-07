@@ -1,4 +1,4 @@
-package com.example.kalkulackamen;
+package com.example.moneyAndroidApp;
 
 import org.junit.Test;
 

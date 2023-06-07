@@ -1,4 +1,4 @@
-package com.example.kalkulackamen;
+package com.example.moneyAndroidApp;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -24,21 +24,22 @@ public class HistoricalDataService {
     private Activity activity;
     private LineChart chart;
 
-    public interface DataFetchedCallback {
+    public interface DataFetchedCallback { // interface pro callback - funkce se zavolá, když jsou data úspěšně načtená (aktualizace dat v grafu)
         void onDataFetched(LineData lineData);
     }
 
-    public HistoricalDataService(Activity activity, LineChart chart) {
+    public HistoricalDataService(Activity activity, LineChart chart) { //konstruktor třídy
         this.activity = activity;
         this.chart = chart;
     }
 
+    //stahování historických dat pomocí knihovny OkHttpClient
     public void fetchHistoricalData(String fromDate, String toDate, String baseCurrency, String targetCurrency, DataFetchedCallback callback) {
         if (!targetCurrency.equals("USD") && !targetCurrency.equals("EUR")) {
             return;
         }
 
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient(); // asynchronní požadavek
 
         String baseUrl = "https://api.frankfurter.app/";
 
@@ -51,16 +52,17 @@ public class HistoricalDataService {
 
         client.newCall(request).enqueue(new Callback() {
             @Override
+            //Kód bude spuštěn, pokud dojde k chybě při pokusu o provedení požadavku
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                // Kód bude spuštěn, pokud požadavek úspěšně vrátí odpověď
                 if (!response.isSuccessful()) {
                     throw new IOException("Unexpected code " + response);
                 } else {
-                    // Parse the response
                     try {
                         String responseString = response.body().string();
                         Log.d("HistoricalDataService", "Response: " + responseString);

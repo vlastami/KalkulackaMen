@@ -1,22 +1,21 @@
-package com.example.kalkulackamen;
+package com.example.moneyAndroidApp;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.Calendar;
-import java.util.List;
 
 public class HistoricalDataActivity extends AppCompatActivity {
 
@@ -25,7 +24,13 @@ public class HistoricalDataActivity extends AppCompatActivity {
     private Spinner baseCurrencySpinner;
     private Spinner targetCurrencySpinner;
     private Button displayDataButton;
+    private Button landscapeButton;
     private LineChart chart;
+    private LineData lineData;
+    private String baseCurrency;
+    private String targetCurrency;
+    private String fromDate;
+    private String toDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +43,23 @@ public class HistoricalDataActivity extends AppCompatActivity {
         targetCurrencySpinner = findViewById(R.id.target_currency_spinner);
         displayDataButton = findViewById(R.id.display_data_button);
         chart = findViewById(R.id.chart);
+        landscapeButton = findViewById(R.id.landscape_button);
+
+        landscapeButton.setOnClickListener(v -> {
+            ChartDataHolder.getInstance().setLineData(lineData); //data se uloží sem
+            Intent intent = new Intent(this, ChartLandscapeActivity.class);
+            intent.putExtra("baseCurrency", baseCurrency);
+            intent.putExtra("targetCurrency", targetCurrency);
+            intent.putExtra("fromDate", fromDate);
+            intent.putExtra("toDate", toDate);
+            startActivity(intent);
+        });
 
         fromDateField.setOnClickListener(v -> showDatePickerDialog(fromDateField));
         toDateField.setOnClickListener(v -> showDatePickerDialog(toDateField));
 
         String[] currencies = {"USD", "EUR"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, currencies);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, currencies); // druh layoutu
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         baseCurrencySpinner.setAdapter(adapter);
@@ -52,15 +68,19 @@ public class HistoricalDataActivity extends AppCompatActivity {
         HistoricalDataService historicalDataService = new HistoricalDataService(this, chart);
 
         displayDataButton.setOnClickListener(v -> {
-            String baseCurrency = baseCurrencySpinner.getSelectedItem().toString();
-            String targetCurrency = targetCurrencySpinner.getSelectedItem().toString();
-            String fromDate = fromDateField.getText().toString();
-            String toDate = toDateField.getText().toString();
+            baseCurrency = baseCurrencySpinner.getSelectedItem().toString();
+            targetCurrency = targetCurrencySpinner.getSelectedItem().toString();
+            fromDate = fromDateField.getText().toString();
+            toDate = toDateField.getText().toString();
+            TextView descriptionText = findViewById(R.id.description_text);
 
             historicalDataService.fetchHistoricalData(fromDate, toDate, baseCurrency, targetCurrency, new HistoricalDataService.DataFetchedCallback() {
                 @Override
-                public void onDataFetched(LineData lineData) {
+                public void onDataFetched(LineData fetchedLineData) {
+                    lineData = fetchedLineData;
                     chart.setData(lineData);
+                    String description = "This chart shows the exchange rate from " + baseCurrency + " to " + targetCurrency + " for each day from " + fromDate + " to " + toDate + ".";
+                    descriptionText.setText(description);
                     chart.invalidate();
                 }
             });
@@ -81,12 +101,5 @@ public class HistoricalDataActivity extends AppCompatActivity {
                 month,
                 day);
         datePickerDialog.show();
-    }
-
-    private void populateChart(LineChart chart, List<Entry> entries) {
-        LineDataSet dataSet = new LineDataSet(entries, "Exchange Rate"); // add entries to dataset
-        LineData lineData = new LineData(dataSet);
-        chart.setData(lineData);
-        chart.invalidate(); // refresh
     }
 }
