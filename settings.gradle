@@ -15,5 +15,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "KalkulackaMen"
+rootProject.name = "moneyAndroidApp"
 include ':app'

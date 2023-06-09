@@ -14,32 +14,35 @@ public class CurrencyConverter {
         double czkToEurRate = exchangeRateService.getCzkToEurRate();
         double czkToUsdRate = exchangeRateService.getCzkToUsdRate();
 
-        if (inputCurrency.equals("CZK")) {
-            if (outputCurrency.equals("EUR")) {
-                return amount / czkToEurRate;
-            } else if (outputCurrency.equals("USD")) {
-                return amount / czkToUsdRate;
-            } else {
+        switch (inputCurrency) { //breaky jsou v Javě dobrovolné, máme returny
+            case "CZK":
+                if (outputCurrency.equals("EUR")) {
+                    return amount / czkToEurRate;
+                }
+                if (outputCurrency.equals("USD")) {
+                    return amount / czkToUsdRate;
+                }
                 return amount;
-            }
-        } else if (inputCurrency.equals("EUR")) {
-            if (outputCurrency.equals("CZK")) {
-                return amount * czkToEurRate;
-            } else if (outputCurrency.equals("USD")) {
-                return amount * czkToEurRate / czkToUsdRate;
-            } else {
+
+            case "EUR":
+                if (outputCurrency.equals("CZK")) {
+                    return amount * czkToEurRate;
+                }
+                if (outputCurrency.equals("USD")) {
+                    return amount * czkToEurRate / czkToUsdRate;
+                }
                 return amount;
-            }
-        } else if (inputCurrency.equals("USD")) {
-            if (outputCurrency.equals("CZK")) {
-                return amount * czkToUsdRate;
-            } else if (outputCurrency.equals("EUR")) {
-                return amount * czkToUsdRate / czkToEurRate;
-            } else {
+
+            case "USD":
+                if (outputCurrency.equals("CZK")) {
+                    return amount * czkToUsdRate;
+                }
+                if (outputCurrency.equals("EUR")) {
+                    return amount * czkToUsdRate / czkToEurRate;
+                }
                 return amount;
-            }
-        } else {
-            return 0.0;
+
         }
+        return 0.0;
     }
 }

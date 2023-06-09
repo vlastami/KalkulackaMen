@@ -22,8 +22,8 @@ public class ConvertActivity extends AppCompatActivity {
     private CurrencyConverter currencyConverter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle savedInstanceState) { //protected je dostupné v package a potomcích, private ve třídě, public všude
+        super.onCreate(savedInstanceState); //kdybych tu neměla super, tak se onCreate předka nezavolá, protože overridujeme tady
         setContentView(R.layout.activity_convert);
 
         inputCurrencySpinner = findViewById(R.id.input_currency_spinner);
@@ -31,14 +31,17 @@ public class ConvertActivity extends AppCompatActivity {
         amountField = findViewById(R.id.amount_field);
         resultField = findViewById(R.id.result_field);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.currency_array, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.currency_array,
+                android.R.layout.simple_spinner_item
+        );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         inputCurrencySpinner.setAdapter(adapter);
         targetCurrencySpinner.setAdapter(adapter);
 
-        ExchangeRateService exchangeRateService = new ExchangeRateService();
+        ExchangeRateService exchangeRateService = new ExchangeRateService(); //bylo by lepší mít ji deklarovanou na úrovni třídy??
         currencyConverter = new CurrencyConverter(exchangeRateService);
 
         Button convertButton = findViewById(R.id.start_conversion_button);
@@ -58,7 +61,12 @@ public class ConvertActivity extends AppCompatActivity {
 
                 runOnUiThread(() -> resultField.setText(String.format(Locale.getDefault(),
                         "On %s, your input of %s %s equals %.2f %s based on the current exchange rate.",
-                        currentDate, amount, inputCurrency, result, targetCurrency)));
+                        currentDate,
+                        amount,
+                        inputCurrency,
+                        result,
+                        targetCurrency
+                )));
             });
         });
     }

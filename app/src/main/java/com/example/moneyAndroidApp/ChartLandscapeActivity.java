@@ -1,7 +1,9 @@
 package com.example.moneyAndroidApp;
 
+import static androidx.constraintlayout.widget.ConstraintLayoutStates.TAG;
+
 import android.os.Bundle;
-import android.widget.TextView;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,11 +19,6 @@ public class ChartLandscapeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart_landscape);
 
-        String baseCurrency = getIntent().getStringExtra("baseCurrency");
-        String targetCurrency = getIntent().getStringExtra("targetCurrency");
-        String fromDate = getIntent().getStringExtra("fromDate");
-        String toDate = getIntent().getStringExtra("toDate");
-
         chart = findViewById(R.id.chart);
 
         LineData lineData = ChartDataHolder.getInstance().getLineData();
@@ -29,7 +26,7 @@ public class ChartLandscapeActivity extends AppCompatActivity {
             chart.setData(lineData);
             chart.invalidate();
         } else {
-            // Show some error message or do error handling here
+            Log.d(TAG, "onCreate: No data to display");
         }
     }
 }

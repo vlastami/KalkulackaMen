@@ -1,7 +1,12 @@
 <resources>
-    <string name="app_name">KalkulackaMen</string>
+    <string name="app_name">moneyAndroidApp</string>
     <string name="base_currency_prompt">Select base currency</string>
     <string name="target_currency_prompt">Select target currency</string>
+    <string name="convert_currencies">Convert Currencies</string>
+    <string name="display_historical_data">Display Historical Data</string>
+    <string name="amount">Amount</string>
+    <string name="convert">Convert</string>
+    <string name="result">Result</string>
     <array name="currency_array">
         <item>CZK</item>
         <item>USD</item>

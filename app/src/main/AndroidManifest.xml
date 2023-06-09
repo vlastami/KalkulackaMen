@@ -11,7 +11,7 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.KalkulackaMen">
+        android:theme="@style/Theme.moneyAndroidApp">
         <activity
             android:name="com.example.moneyAndroidApp.HistoricalDataActivity"
             android:exported="false" />

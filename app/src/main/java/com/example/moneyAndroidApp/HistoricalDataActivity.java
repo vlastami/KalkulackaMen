@@ -16,6 +16,7 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.LineData;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 public class HistoricalDataActivity extends AppCompatActivity {
 
@@ -31,6 +32,13 @@ public class HistoricalDataActivity extends AppCompatActivity {
     private String targetCurrency;
     private String fromDate;
     private String toDate;
+
+//    HistoricalDataService.DataFetchedCallback dataFetchedCallback = new HistoricalDataService.DataFetchedCallback() {
+//        @Override
+//        public void onDataFetched(LineData lineData) {
+//
+//        }
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,15 +82,12 @@ public class HistoricalDataActivity extends AppCompatActivity {
             toDate = toDateField.getText().toString();
             TextView descriptionText = findViewById(R.id.description_text);
 
-            historicalDataService.fetchHistoricalData(fromDate, toDate, baseCurrency, targetCurrency, new HistoricalDataService.DataFetchedCallback() {
-                @Override
-                public void onDataFetched(LineData fetchedLineData) {
-                    lineData = fetchedLineData;
-                    chart.setData(lineData);
-                    String description = "This chart shows the exchange rate from " + baseCurrency + " to " + targetCurrency + " for each day from " + fromDate + " to " + toDate + ".";
-                    descriptionText.setText(description);
-                    chart.invalidate();
-                }
+            historicalDataService.fetchHistoricalData(fromDate, toDate, baseCurrency, targetCurrency, fetchedLineData -> { //lambda v lambdě meh, implementuje jedinou metodu
+                lineData = fetchedLineData;
+                chart.setData(lineData);
+                String description = "This chart shows the exchange rate from " + baseCurrency + " to " + targetCurrency + " for each day from " + fromDate + " to " + toDate + ".";
+                descriptionText.setText(description);
+                chart.invalidate();
             });
         });
     }
@@ -95,11 +100,12 @@ public class HistoricalDataActivity extends AppCompatActivity {
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 this,
-                (DatePicker view, int year1, int monthOfYear, int dayOfMonth) ->
-                        dateField.setText(String.format("%04d-%02d-%02d", year1, monthOfYear + 1, dayOfMonth)),
+                (DatePicker view, int year1, int monthOfYear, int dayOfMonth)
+                        -> dateField.setText(String.format(Locale.ENGLISH, "%04d-%02d-%02d", year1, monthOfYear + 1, dayOfMonth)),
                 year,
                 month,
-                day);
+                day
+        );
         datePickerDialog.show();
     }
 }

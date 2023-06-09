@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -24,6 +26,7 @@ public class HistoricalDataService {
     private Activity activity;
     private LineChart chart;
 
+    @FunctionalInterface
     public interface DataFetchedCallback { // interface pro callback - funkce se zavolá, když jsou data úspěšně načtená (aktualizace dat v grafu)
         void onDataFetched(LineData lineData);
     }
@@ -53,12 +56,12 @@ public class HistoricalDataService {
         client.newCall(request).enqueue(new Callback() {
             @Override
             //Kód bude spuštěn, pokud dojde k chybě při pokusu o provedení požadavku
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 e.printStackTrace();
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 // Kód bude spuštěn, pokud požadavek úspěšně vrátí odpověď
                 if (!response.isSuccessful()) {
                     throw new IOException("Unexpected code " + response);
@@ -67,7 +70,6 @@ public class HistoricalDataService {
                         String responseString = response.body().string();
                         Log.d("HistoricalDataService", "Response: " + responseString);
 
-                        JSONObject json = new JSONObject(responseString);
                         JSONObject rates = new JSONObject(responseString).getJSONObject("rates");
                         Iterator<String> dates = rates.keys();
 
@@ -81,17 +83,15 @@ public class HistoricalDataService {
                         }
 
                         LineDataSet dataSet = new LineDataSet(entries, "Historical Data");
-                        Log.d("HistoricalDataService", "DataSet: " + dataSet.toString());
+                        Log.d("HistoricalDataService", "DataSet: " + dataSet);
 
                         dataSet.setColor(Color.RED);
                         dataSet.setValueTextColor(Color.BLACK);
 
                         LineData lineData = new LineData(dataSet);
-                        Log.d("HistoricalDataService", "LineData: " + lineData.toString());
+                        Log.d("HistoricalDataService", "LineData: " + lineData);
 
-                        activity.runOnUiThread(() -> {
-                            callback.onDataFetched(lineData);
-                        });
+                        activity.runOnUiThread(() -> callback.onDataFetched(lineData));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

@@ -7,6 +7,8 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 import java.io.StringReader;
 
@@ -31,12 +33,12 @@ public class ExchangeRateService {
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 e.printStackTrace();
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException { //doporučení ide
                 if (response.isSuccessful()) {
                     try {
                         String responseBody = response.body().string();
@@ -48,23 +50,21 @@ public class ExchangeRateService {
                         int event = myParser.getEventType();
                         while (event != XmlPullParser.END_DOCUMENT) {
                             String name = myParser.getName();
-                            switch (event) {
-                                case XmlPullParser.START_TAG:
-                                    if (name.equals("radek")) {
-                                        String currencyCode = myParser.getAttributeValue(null, "kod");
-                                        if (currencyCode.equals("EUR") || currencyCode.equals("USD")) {
-                                            double rate = Double.parseDouble(myParser.getAttributeValue(null, "kurz").replace(",", "."));
-                                            double quantity = Double.parseDouble(myParser.getAttributeValue(null, "mnozstvi"));
-                                            double ratePerUnit = rate / quantity;
+                            if (event == XmlPullParser.START_TAG && name.equals("radek")) {
+                                String currencyCode = myParser.getAttributeValue(null, "kod");
+                                if (currencyCode.equals("EUR") || currencyCode.equals("USD")) {
+                                    double rate = Double.parseDouble(myParser.getAttributeValue(null, "kurz")
+                                            .replace(",", ".")
+                                    );
+                                    double quantity = Double.parseDouble(myParser.getAttributeValue(null, "mnozstvi"));
+                                    double ratePerUnit = rate / quantity;
 
-                                            if (currencyCode.equals("EUR")) {
-                                                czkToEurRate = ratePerUnit;
-                                            } else if (currencyCode.equals("USD")) {
-                                                czkToUsdRate = ratePerUnit;
-                                            }
-                                        }
+                                    if (currencyCode.equals("EUR")) {
+                                        czkToEurRate = ratePerUnit;
+                                    } else {
+                                        czkToUsdRate = ratePerUnit;
                                     }
-                                    break;
+                                }
                             }
                             event = myParser.next();
                         }
